@@ -1,0 +1,7 @@
+---
+# vars file for roles/nginx
+nginx_document_root: /var/www/html
+nginx_server_name: mynginx.local
+allowed_ips:
+ - 10.0.0.5
+ - 10.0.0.6

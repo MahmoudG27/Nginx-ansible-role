@@ -1,0 +1,46 @@
+---
+# tasks file for roles/nginx
+- name: Ensure NGINX is installed
+  apt:
+     name: nginx
+     state: present
+     update_cache: yes
+- name: Set correct ownership for web directory
+  file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+- name: Set correct permissions for web directory
+  file:
+    path: /var/www/html
+    mode: '0755'
+    recurse: yes
+
+- name: Create an index.html file if not exists
+  copy:
+    dest: /var/www/html/index.html
+    content: "Hello, NGINX!"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Ensure correct NGINX configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  notify: restart nginx
+
+- name: Enable NGINX site configuration
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+
+- name: Start and enable Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+
